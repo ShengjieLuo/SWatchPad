@@ -1,6 +1,7 @@
 # SWatchPad
 Build the audio wireless tracking platform - SJTU Network Lab
-Up till now, we have done following work
+
+**Work Track in 11/11**
 
 ##PSK Audio Singnal and Processing
 ###Work Have Done
@@ -23,10 +24,12 @@ Up till now, we have done following work
 ##OFDM Audio Signal
 ###Work Have Done
 * _**[New!]**_ We have research the topic of FDM and OFDM. FDM would be easy, OFDM is difficult but within better effect. Both of two methods would be tested in the next week. Then, we would decide which one to be used finally.
+
 ###Work in Track
 * _**[New!]**_ Shengjie would design the modulate-demodulate program this weekend.
+
 ###Work in plan
-Also the combination of PSK and usual wave is critical in our paper. The PSK told us the information of distance, 
+* The combination of PSK and usual wave is critical in our paper. The PSK told us the information of distance, 
 and doppler effect of usual wave gave us the motion information.
 
 
