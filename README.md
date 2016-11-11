@@ -33,15 +33,15 @@ Build the audio wireless tracking platform - SJTU Network Lab
 and doppler effect of usual wave gave us the motion information.
 
 
-##Double-Static Tracking
+##Static-Static Tracking
 ###Work in plan
 Easy step if we get the PSK time difference.
 
-##Single-Static-Single-Dynamic Tracking
+##Static-Dynamic Tracking
 ###Work in plan
 It would be major task in the next week.
 
-##Double-Dynamic Tracking
+##Dynamic-Dynamic Tracking
 ###Work in plan
 It would be mojor task in the next week as well.
 
