@@ -199,13 +199,133 @@ def PSKComplexZeroWaveMake(freq,time):
         wavefile.close()
         return filename
 
-	
+
+
+'''
+Function:PSKBalanceZeroWaveMake(freq,time)
+Effect: A complex type of PSK audio signal
+说明：该束PSK信号传递的是110 110 110 110，规则为经典的PSK模式
+Input1: freq : frequency of the required audio file
+Input2: time : the time length of the audio file
+Output: the filename of the audio file
+Version:
+0.1     master branch   Author:Luo      Date:11/11
+'''
+def PSKBalanceZeroWaveMake(freq,time):
+	MAX_AMPLITUDE = 32767
+        SAMPLE_RATE = 44100
+        DURATION_SEC = time
+        SAMPLE_LEN =  SAMPLE_RATE * DURATION_SEC
+        filename = './'+ str(freq) + 'Hz_'+ str(DURATION_SEC) + 's_PSKBalanceZero.wav'
+        print "Creating sound file:", filename
+        print "Sample rate:", SAMPLE_RATE
+        print "Duration (sec):", DURATION_SEC
+        print "# samples:", SAMPLE_LEN
+        wavefile = wave.open(filename, 'w')
+        wavefile.setparams((1, 2, SAMPLE_RATE, 0, 'NONE', 'not compressed'))
+        samples , DEBUG_SAMPLES= [], []
+        PSK_INTERVAL = SAMPLE_LEN / freq * 60
+	PSK_CONVERT = [0]
+	flag = 1
+	while 1:
+		if PSK_INTERVAL * flag < SAMPLE_LEN:
+			PSK_CONVERT.append(PSK_INTERVAL * flag)
+		else:
+			break
+		flag += 1 
+	PSK_CONVERT.append(SAMPLE_LEN)
+	flag = 0
+        for i in range(SAMPLE_LEN):
+		if i >= PSK_CONVERT[flag] and i < PSK_CONVERT[flag+1] and flag%2==0:
+			t = float(i) / SAMPLE_RATE
+                	sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+		elif i >= PSK_CONVERT[flag] and i < PSK_CONVERT[flag+1] and flag%2==1:
+			t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi + math.pi)
+		elif i == PSK_CONVERT[flag+1]:
+			flag += 1
+			t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+		DEBUG_SAMPLES.append(sample)
+                packed_sample = struct.pack('h', sample)
+                samples.append(packed_sample)
+        #print "[DebugInfo]:"
+        #print DEBUG_SAMPLES
+	#print PSK_CONVERT
+        sample_str = ''.join(samples)
+        wavefile.writeframes(sample_str)
+        wavefile.close()
+        return filename
+
+'''
+Function:PSKLargeZeroWaveMake(freq,time)
+Effect: A complex type of PSK audio signal
+说明：该束PSK信号传递的是10 110 1110 11110，但是0之间的间距比较大，规则为经典的PSK模式
+Input1: freq : frequency of the required audio file
+Input2: time : the time length of the audio file
+Output: the filename of the audio file
+Version:
+0.1     master branch   Author:Luo      Date:11/09
+'''
+def PSKLargeZeroWaveMake(freq,time):
+        MAX_AMPLITUDE = 32767
+        SAMPLE_RATE = 44100
+        DURATION_SEC = time
+        SAMPLE_LEN =  SAMPLE_RATE * DURATION_SEC
+        filename = './'+ str(freq) + 'Hz_'+ str(DURATION_SEC) + 's_PSKLargeZero.wav'
+        print "Creating sound file:", filename
+        print "Sample rate:", SAMPLE_RATE
+        print "Duration (sec):", DURATION_SEC
+        print "# samples:", SAMPLE_LEN
+        wavefile = wave.open(filename, 'w')
+        wavefile.setparams((1, 2, SAMPLE_RATE, 0, 'NONE', 'not compressed'))
+        samples , DEBUG_SAMPLES= [], []
+        PSK_NUM = SAMPLE_LEN / freq * 2
+        PSK_CONVERT = [0]
+        temp , flag = 1,20
+        while 1:
+                flag += temp
+                if PSK_NUM * flag < SAMPLE_LEN:
+                        PSK_CONVERT.append(PSK_NUM * flag)
+                else:
+                        break
+                temp += 5
+        PSK_CONVERT.append(SAMPLE_LEN)
+        flag = 0
+        for i in range(SAMPLE_LEN):
+                if i >= PSK_CONVERT[flag] and i < PSK_CONVERT[flag+1] and flag%2==0:
+                        t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+                elif i >= PSK_CONVERT[flag] and i < PSK_CONVERT[flag+1] and flag%2==1:
+                        t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi + math.pi)
+                elif i == PSK_CONVERT[flag+1]:
+                        flag += 1
+                        t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+                DEBUG_SAMPLES.append(sample)
+		packed_sample = struct.pack('h', sample)
+                samples.append(packed_sample)
+        #print "[DebugInfo]:"
+        #print DEBUG_SAMPLES
+        #print PSK_CONVERT
+        sample_str = ''.join(samples)
+        wavefile.writeframes(sample_str)
+        wavefile.close()
+        return filename
+
+
+
 if __name__ == "__main__":
 	
-	PSKSimpleZeroWaveMake(18000,10)
+	#PSKSimpleZeroWaveMake(18000,10)
 	#Note: 	please use (18000,10x) as the default parameter in this function
 	#	Otherwise the PSK convert-phase cannot be guaranteed -- by Shengjie
 
-	PSKComplexZeroWaveMake(18000,10)
+	#PSKComplexZeroWaveMake(18000,10)
         #Note:  please use (18000,10x) as the default parameter in this function
         #       Otherwise the PSK convert-phase cannot be guaranteed -- by Shengjie
+
+	PSKBalanceZeroWaveMake(18000,10)
+	PSKLargeZeroWaveMake(18000,10)
+	
