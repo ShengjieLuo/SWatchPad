@@ -3,6 +3,11 @@
 Name: fft.py
 Function: DO the fft transformation. 
 说明：本程序用于进行FFT变换，使得时域信号转化为频域信号。通过分析频域信号，可以确定当前声音信号的频率。
+Version:
+0.1	Luo	master branch
+	The initial version
+0.2	Luo	master branch
+	1 Add the debug flag, enable the debug mode
 '''
 
 import numpy as np
@@ -16,7 +21,7 @@ Function: ffttran()
 input1:	name		the filename of the WAV file
 input2:	leftlimit	left limit of the frequency domain signal
 input3:	rightlimit	right limit of the freuqency domain signal
-input4: flag		flag=1 verbose the infomation
+input4: flag		flag=1 verbose the debug infomation
 
 output1: xdata		the frequency axis
 output2: ydata		the energy axis
@@ -31,18 +36,18 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	wf = wave.open(name, "rb")
 	nframes = wf.getnframes()
 	framerate = wf.getframerate()
-	print nframes,framerate
+	if flag==1:
+		print "  [Debug]  Totally Frames: ",nframes
+		print "  [Debug]  The Framerate of the audio file: ",framerate
 	str_data = wf.readframes(framerate)
 	wf.close()
 	wave_data = np.fromstring(str_data, dtype=np.short)
 	N=len(wave_data)
-	print N
-	#print "SAMPLE_LENGTH",N
 	start=0 #开始采样位置
 	df = framerate/(N-1.0) # 分辨率
-	print df
+	if flag==1:
+		print "  [Debug]  The difiniton rate(frequency range per index point): ",df
 	freq = [df*n for n in range(0,N)] #N个元素
-	print freq[:100]
 	wave_data2 = wave_data[start:start+N]
 	wave_data2 = wave_data2 * signal.hann(N,sym=0)*2
 	c=np.fft.fft(wave_data2)*2/N
@@ -50,11 +55,11 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	index_end = _waveIndexEnd(freq,c,rightlimit)
 	xdata,ydata = _waveFreqData(name,freq,c,index_begin,index_end,N)
 	if flag==1:
+		print "  [Debug]  The Primary Frequency Peak"
 		for i in range(len(xdata)):
 			if ydata[i]>400:
-				print "freq:"+str(xdata[i])+" energy:"+str(ydata[i])
+				print "    freq: "+str(xdata[i])+" energy: "+str(ydata[i])
 	return xdata,ydata
-
 
 '''
 Function: _waveINdexBegin

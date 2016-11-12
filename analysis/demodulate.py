@@ -6,12 +6,17 @@ Name: demodulate.py
 Version
 0.1	Luo	master branch
 	THe initial version
+0.2	Luo	master branch
+	1. Cutoff the '_regulate' function and return the 'digital signal' directly.
+	2. Add the debug flag to enable the debug mode
+	3. Test the suitable num in function '_signaltest'
 '''
 
 import csv
 import wave
 import numpy as np
 import pylab as pl
+import pdb
 from scipy import interpolate 
 from readWave import wave2list as readWave_wave2list
 from fft import ffttran as fft_ffttran
@@ -20,15 +25,16 @@ from fft import ffttran as fft_ffttran
 FUnction: dePSK_ideal(wavlist)
 说明：用于对理想状态下的PSK波形进行解码，主要用于测试解码程序的正确性
 '''
-def dePSK_ideal(wavfile,outputfile):
+def dePSK_ideal(wavfile,outputfile,debug=0):
+	ratio = 10
 	wavlist = _wav2list(wavfile)
-	reffreq = _getRefFreq(wavfile)
-	wavlistFilter = _listfilter(wavlist)
-	wavlistAdd = _freqadd(wavlistFilter,ratio=10)
-	digitalsignal = _demodulate(wavlistAdd,reffreq,ratio=10)
-	_signaltest(digitalsignal,ratio=10)
-	PSKsignal = _regulate(digitalsignal)
-	_list2csv(PSKsignal,outputfile)
+	reffreq = _getRefFreq(wavfile,debug)
+	wavlistFilter = _listfilter(wavlist,debug)
+	wavlistAdd = _freqadd(wavlistFilter,ratio,debug)
+	digitalsignal = _demodulate(wavlistAdd,reffreq,ratio,debug)
+	_signaltest(digitalsignal,ratio,debug)
+	#PSKsignal = _regulate(digitalsignal,debug)
+	_list2csv(digitalsignal,outputfile)
 	return digitalsignal
 
 '''
@@ -46,7 +52,7 @@ Functiuon:_listfilter()
 input:	wavlist		the data structure of the original audio sample
 output:	wavlistFilter	the data structure of the filtered audio sample
 '''
-def _listfilter(wavlist):
+def _listfilter(wavlist,debug=0):
 	wavlistFilter = []
 	flag = 0
 	for i in wavlist:
@@ -57,8 +63,9 @@ def _listfilter(wavlist):
 			flag = 1
 		else:
 			continue
-	print "The length before filter:",len(wavlist)
-	print "The length after filter:",len(wavlistFilter)	
+	if debug == 1:
+		print "  [Debug]  The length before filter:",len(wavlist)
+		print "  [Debug]  The length after filter:",len(wavlistFilter)	
 	return wavlistFilter
 
 
@@ -68,18 +75,16 @@ Function: _getRefFreq()
 input:	wavfile		the name of the wave file
 output:	reffreq		reference frequency of the audio signal
 '''
-def _getRefFreq(wavfile):
-	freqdata,energydata = fft_ffttran(wavfile,16000,20000)
-	#print freqdata[0:2000],energydata[0:2000]
-	#print len(freqdata),len(energydata)
+def _getRefFreq(wavfile,debug=0):
+	freqdata,energydata = fft_ffttran(wavfile,16000,20000,flag=1)
 	peakcount , peaksum = 0 ,0 
 	for i in range(1,len(freqdata)-1):
 		if energydata[i]>400 and energydata[i]>energydata[i-1] and energydata[i]>energydata[i+1]:
-			#print 'freq:'+str(freqdata[i])+ ' energy:'+str(energydata[i])
 			peakcount += energydata[i]
 			peaksum += energydata[i]*freqdata[i]
 	reffreq = (peaksum+0.0)/peakcount
-	print "Reference Frequency: ",reffreq
+	if debug==1:
+		print "  [Debug]  Reference Frequency: ",reffreq
 	return reffreq
 
 '''
@@ -87,17 +92,18 @@ FUnction: _freqadd()
 说明：由于初始的频率点是十分稀疏的，这不利于PSK的解码工作，所以我们需要在两个采样点之间增添一些辅助采样点，用于提高PSK的精度
 input:	wavlist		the data structure of the filtered audio sample
 input: 	ratio		The points after addition : The points before addtion. By default, ratio = 10
+input: 	debug		verbose the debug information if debug = 1
 output:	wavlistadd	the data structure of the addtional audio samples
 '''
-def _freqadd(wavlist,ratio=10):
+def _freqadd(wavlist,ratio=10,debug=0):
 	# The ratio should be integer larger than 1 -- note by SHengjie
 	y = wavlist
 	x = np.linspace(1,len(wavlist),len(wavlist))
 	x_new = np.linspace(1,len(wavlist),len(wavlist)*ratio)
 	tck = interpolate.splrep(x, y)
-	y_bspline = interpolate.splev(x_new, tck)	
-	print "POints after addition:",len(y_bspline)
-	#print y_bspline[0:100]
+	y_bspline = interpolate.splev(x_new, tck)
+	if debug == 1:	
+		print "  [Debug]  Points after addition:",len(y_bspline)
 	return y_bspline
 
 '''
@@ -107,14 +113,14 @@ input:	wavlist		the data structure of the filtered additional audio sample
 input:	ref		the reference frequency
 output:	signallist	the data structure of the demodulated digital signal
 '''
-def _demodulate(wavlist,reffreq,ratio=10):
+def _demodulate(wavlist,reffreq,ratio=10,debug=0):
 	sampleRate = 44100.0*ratio 		#经过处理后，每秒采样的个数
 	cycleRate = reffreq			#每秒采样的周期数
 	point_per_cycle = sampleRate/cycleRate	#每个周期对应的采样点个数
 	wavlist_original = wavlist[round(point_per_cycle):] #原始波形
 	wavlist_difference = wavlist[:len(wavlist)-round(point_per_cycle)] #差分相干波形
-	#print len(wavlist_original),len(wavlist_difference)
-	print point_per_cycle
+	if debug == 1:
+		print "  [Debug]  Sample point per signal cycle: ",point_per_cycle
 	digitalsignal = []
 	for i in range(len(wavlist_original)):
 		flag = wavlist_original[i]*wavlist_difference[i]
@@ -145,8 +151,9 @@ Function:_signaltest()
 input:	digitalsignal	list of the digital signals after modulated
 output:	newlist		the regulated list
 '''
-def _signaltest(digitalsignal,ratio):
-	num = 20
+def _signaltest(digitalsignal,ratio,debug=0):
+	num = 5
+	#Note : For ideal signal, the 'num' should be 5 --From Shengjie
 	target = [0]*num
 	verifylist = []
 	for i in range(len(digitalsignal)-5):
@@ -162,17 +169,18 @@ def _signaltest(digitalsignal,ratio):
 	for i in range(len(verifylist)):
 		if verifylist[i] != 0:
 			tmplist.append(verifylist[i])
-		if verifylist[i] > 130:
+		if verifylist[i] >= 130:
 			break
 	verifylist = tmplist
-	print verifylist
+	if debug == 1:
+		print "  [Debug]  The interval between two ZERO signal: ",verifylist
 	return newlist
 
 '''
-FUnction:_regulate()
+Function:_regulate()
 说明：用于规整格式
 '''
-def _regulate(digitalsignal,ratio=10):
+def _regulate(digitalsignal,ratio=10,debug=0):
 	length = len(digitalsignal)/ratio
 	PSKsignal = [1]*length
 	num = 20
@@ -184,6 +192,6 @@ def _regulate(digitalsignal,ratio=10):
 
 
 if __name__ == '__main__':
-	#dePSK_ideal('18000Hz_10s_PSKSequenceZero.wav','18000Hz_ideal.csv')
+	dePSK_ideal('../makewave/18000Hz_10s_PSKSequenceZero.wav','18000Hz_ideal.csv',debug=1)
 	#dePSK_ideal('18000_test.wav','18000Hz_test.csv')
-	dePSK_ideal('18000_hand.wav','18000_hand.csv')
+	#dePSK_ideal('18000_hand.wav','18000_hand.csv',debug=1)
