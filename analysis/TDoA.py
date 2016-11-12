@@ -44,8 +44,14 @@ output:	psklist
 def  _csv2list(csvfile,debug): 
 	reader = csv.reader(file(csvfile,'rb'))  
 	for line in reader:
-  		psklist = line
-    	if debug==1:
+  		psklisttmp = line
+    	psklist = []
+	for i in psklisttmp:
+		if i == '0':
+			psklist.append(0)
+		else:
+			psklist.append(1)
+	if debug==1:
 		print "  [Debug]  Total number of digital PSK signals: ",len(psklist)
 	return psklist
 
@@ -56,8 +62,81 @@ input:	debug		debug flag. If debug = 1,verbose the debug infomation
 output:	diff		the point difference of signals from two path
 '''
 def _pointdiff(psklist,debug=0):
-	return 25
+	
+	# assure the original infomation
+	zero_count0 = 0
+	for i in range(len(psklist)):
+		if psklist[i]==0:
+			zero_count0 += 1
+	
+	# improve the psklist by flitering sudden zero
+	psklist1 , zerorange = [],[]
+	num = 3
+	zero_count1 = 0
+	for i in range(1,len(psklist)):
+		flag = 0	
+		for j in psklist[i-num:i+num]:
+			if j==1:
+				flag = 1
+				break
+		if flag == 0:
+			left_limit,right_limit = i,i
+			while 1:
+				left_limit -= 1
+				try:
+					if psklist[left_limit] == 1:
+						break
+					else:
+						continue
+				except:
+					break
+			while 1:
+				right_limit += 1
+				try:
+					if psklist[right_limit] == 1:
+						break
+					else:
+						continue
+				except:
+					break
+			zerorange.append((left_limit,right_limit))
+	tmpzerorange=list(set(zerorange))
+	tmpzerorange.sort(key=zerorange.index)	
+	zerorange = tmpzerorange
+	tmpzerorange = []
+	threshold = 5
+	#for i in range(1,len(zerorange)-1):
+	i = 0
+	while 1:
+		if abs(zerorange[i+1][0] - zerorange[i][1])<threshold:
+			tmpzerorange.append((zerorange[i][0],zerorange[i+1][1]))
+		else:
+			tmpzerorange.append(zerorange[i])
+		i += 1
+		if i >= len(zerorange)-1:
+			break
+	zerorange = tmpzerorange
 
+	tmpzerorange = []
+	i = 0
+	while 1:
+		if zerorange[i][1] == zerorange[i+1][1]:
+			tmpzerorange.append(zerorange[i])
+			i += 1
+		else:	
+			tmpzerorange.append(zerorange[i])
+		i += 1
+		print i,len(zerorange)
+		if i >= len(zerorange)-1:
+			break
+	zerorange = tmpzerorange
+
+	#Debug info
+	if debug == 1:
+		print "  [Debug]  The original zero signal: ",zero_count0
+		print "  [Debug]  The zero signal after filtering:  ",len(zerorange)
+		print "  [Debug]  The zero range: ",zerorange
+	return 25
 
 '''
 Function: _point2distance()
