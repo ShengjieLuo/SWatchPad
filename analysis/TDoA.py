@@ -15,6 +15,7 @@ Version
 '''
 
 import csv
+from sklearn.cluster import KMeans
 
 '''
 Function:TDoA()
@@ -30,7 +31,7 @@ output:	reflectpath	the length of the reflected path
 
 def TDoA(signalcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
 	psklist 	= _csv2list(signalcsv,debug)
-	diff 		= _pointdiff(psklist,debug)
+	diff 		= _pointdiff(psklist,samplerate,additionalratio,debug)
 	distance 	= _point2distance(samplerate,additionalratio,diff,debug)
 	reflect 	= _pathdistance(distance,directpath,debug)
 	return reflect	
@@ -61,15 +62,25 @@ input:	psklist		the data structure of the PSK digital signal
 input:	debug		debug flag. If debug = 1,verbose the debug infomation
 output:	diff		the point difference of signals from two path
 '''
-def _pointdiff(psklist,debug=0):
+def _pointdiff(psklist,samplerate,additionalratio,debug=0):
 	
-	# assure the original infomation
+	
+	#******************************************************************
+	# Step 0 : Print original infomation                              *
+	# 1. Count the zero number in the signal list			  *
+	#******************************************************************
 	zero_count0 = 0
 	for i in range(len(psklist)):
 		if psklist[i]==0:
 			zero_count0 += 1
-	
-	# improve the psklist by flitering sudden zero
+		
+	#******************************************************************
+	# Step 1 : Locate the continuous zero signal                      *
+	# 1. Locate the continuous zero signal, the number of  continuous *
+	#    signal numbers should be larger than 2*num 		  *
+	# 2. Record the left_limit and right_limit of the continuous	  *
+	#    zero signals, we call it zerorange.			  *
+	#******************************************************************
 	psklist1 , zerorange = [],[]
 	num = 3
 	zero_count1 = 0
@@ -102,10 +113,17 @@ def _pointdiff(psklist,debug=0):
 			zerorange.append((left_limit,right_limit))
 	tmpzerorange=list(set(zerorange))
 	tmpzerorange.sort(key=zerorange.index)	
+	
+	
+	#******************************************************************
+	# Step 2: improve the zero signal                                 *
+	# 1. Merge the neighbor zero ranges into one zero range.          *
+	#    if points between two zero ranges are fewer than threshold,  *
+	#    we would merge them and regard the gap as an outlier         *
+	#******************************************************************
 	zerorange = tmpzerorange
 	tmpzerorange = []
 	threshold = 10
-	#for i in range(1,len(zerorange)-1):
 	i = 0
 	while 1:
 		if abs(zerorange[i+1][0] - zerorange[i][1])<threshold:
@@ -120,23 +138,62 @@ def _pointdiff(psklist,debug=0):
 	tmpzerorange = []
 	i = 0
 	while 1:
-		if zerorange[i][1] == zerorange[i+1][1]:
+		if zerorange[i][1] >= zerorange[i+1][1]:
 			tmpzerorange.append(zerorange[i])
 			i += 1
 		else:	
 			tmpzerorange.append(zerorange[i])
 		i += 1
-		print i,len(zerorange)
+		#print i,len(zerorange)
 		if i >= len(zerorange)-1:
 			break
 	zerorange = tmpzerorange
 
-	#Debug info
+
+	#******************************************************************
+	# Step 3: Cluster in zerorange                                            *
+	# 1. Change the zerorange info into the point difference between  *
+	#    two ranges. For example, range (0,7) and (10,17) --> 3       *
+	# 2. Clustering the zerodiff to find the major feature            *
+	#******************************************************************
+	zerodiffs = []
+	REF_FREQ = 18000
+	CLUSTER_NUM = 50
+	POINT_PER_PERIOD = int(round(samplerate * additionalratio / REF_FREQ))
+	for i in range(len(zerorange)-1):
+		zerodiff = zerorange[i+1][0]-zerorange[i][1]
+		if zerodiff < 0:
+			zerodiff = POINT_PER_PERIOD + zerodiff
+		zerodiffs.append(zerodiff)
+	clustertmp = []
+	for i in zerodiffs:
+		clustertmp.append([float(i)])
+	clf = KMeans(CLUSTER_NUM)
+	s = clf.fit(clustertmp)
+	clusterGroup = clf.cluster_centers_
+	clusterLabel = clf.labels_
+	clusterCount = [0] * CLUSTER_NUM
+	for i in clusterLabel:
+		clusterCount[i] = clusterCount[i] + 1
+	clusterMax = clusterCount.index(max(clusterCount))
+	diff = clusterGroup[clusterMax]
+	
+	#******************************************************************
+	# DEBUG_INFO                                                      *
+	#******************************************************************
 	if debug == 1:
 		print "  [Debug]  The original zero signal: ",zero_count0
-		print "  [Debug]  The zero signal after filtering:  ",len(zerorange)
+		print "  [Debug]  The zero signal after filtering: ",len(zerorange)
 		print "  [Debug]  The zero range: ",zerorange
-	return 25
+		print "  [Debug]  The difference between two ranges: ",zerodiffs
+		print "  [Debug]  The center of the difference group: "
+		for i in clusterGroup:
+			string = str(int(i))+' '
+		print string + '\n'
+		print "  [Debug]  The distribution of the cluster group: ",clusterCount
+		print "  [Debug]  The point difference between two paths: ",diff
+	
+	return diff
 
 '''
 Function: _point2distance()
