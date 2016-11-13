@@ -104,7 +104,7 @@ def _pointdiff(psklist,debug=0):
 	tmpzerorange.sort(key=zerorange.index)	
 	zerorange = tmpzerorange
 	tmpzerorange = []
-	threshold = 5
+	threshold = 10
 	#for i in range(1,len(zerorange)-1):
 	i = 0
 	while 1:
@@ -170,4 +170,5 @@ def _pathdistance(distanceDiff,directpath,debug):
 	return reflectpath
 
 if __name__ == '__main__':
-	TDoA('18000Hz_ideal.csv',debug=1)
+	#TDoA('18000Hz_ideal.csv',debug=1)
+	TDoA('18000Hz_ideal_twopath.csv',debug=1)
