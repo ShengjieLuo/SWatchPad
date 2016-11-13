@@ -19,7 +19,7 @@ Wave_write.writeframes(data)		实际写文件 Write audio frames and make sure n
 '''
 
 import wave
-import pyaudio
+#import pyaudio
 import math
 import struct
 
@@ -314,6 +314,77 @@ def PSKLargeZeroWaveMake(freq,time):
         wavefile.close()
         return filename
 
+'''
+Function:PSKSequenceZeroTwoPathWaveMake(freq,time)
+Effect: A complex type of PSK audio signal. Derived from the PSK sequence zero.
+IT is composed of the PSK signals from two paths.
+The time difference between two paths is 2 signal period.
+Input1: freq : frequency of the required audio file
+Input2: time : the time length of the audio file
+Output: the filename of the audio file
+Version:
+0.1     master branch   Author:Luo      Date:11/13
+'''
+def PSKSequenceZeroTwoPathWaveMake(freq,time):
+        MAX_AMPLITUDE = 32767/2
+        SAMPLE_RATE = 44100
+        DURATION_SEC = time
+	TIME_INTERVAL = 2
+        VELOCITY = 34300
+	SAMPLE_LEN =  SAMPLE_RATE * DURATION_SEC
+        filename = './'+ str(freq) + 'Hz_'+ str(DURATION_SEC) + 's_PSKSequenceZeroTwoPath.wav'
+        print "Creating sound file:", filename
+        print "Sample rate:", SAMPLE_RATE
+        print "Duration (sec):", DURATION_SEC
+        print "# samples:", SAMPLE_LEN
+        wavefile = wave.open(filename, 'w')
+        wavefile.setparams((1, 2, SAMPLE_RATE, 0, 'NONE', 'not compressed'))
+        samples , DEBUG_SAMPLES= [], []
+        PSK_NUM = SAMPLE_LEN / freq * 2
+        PSK_CONVERT = [0]
+        temp , flag = 1,0
+        while 1:
+                flag += temp
+                if PSK_NUM * flag < SAMPLE_LEN:
+                        PSK_CONVERT.append(PSK_NUM * flag)
+                else:
+                        break
+                temp += 1
+        PSK_CONVERT.append(SAMPLE_LEN)
+        flag = 0
+        for i in range(SAMPLE_LEN):
+                if i >= PSK_CONVERT[flag] and i < PSK_CONVERT[flag+1] and flag%2==0:
+                        t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+		elif i >= PSK_CONVERT[flag] and i < PSK_CONVERT[flag+1] and flag%2==1:
+			t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi + math.pi)
+		elif i == PSK_CONVERT[flag+1]:
+			flag += 1
+			t = float(i) / SAMPLE_RATE
+                        sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+		samples.append(sample)
+	samples_reflected = [0]* int(round(TIME_INTERVAL*SAMPLE_RATE/freq))
+	samples_reflected.extend(samples)
+	samples_reflected = samples_reflected[:len(samples)]
+	for i in range(len(samples)):
+		samples[i] = samples[i] + samples_reflected[i]
+        
+	debuginfo = open("SequenceZeroTwoPath.csv",'w') 
+	for i in samples:
+		debuginfo.write(str(i)+'\n')
+	debuginfo.close()
+	
+	tmp_samples = []
+	for i in range(len(samples)):
+		packed_sample = struct.pack('h', samples[i])
+        	tmp_samples.append(packed_sample)
+	samples = tmp_samples
+	
+        sample_str = ''.join(samples)
+        wavefile.writeframes(sample_str)
+        wavefile.close()
+        return filename
 
 
 if __name__ == "__main__":
@@ -326,6 +397,6 @@ if __name__ == "__main__":
         #Note:  please use (18000,10x) as the default parameter in this function
         #       Otherwise the PSK convert-phase cannot be guaranteed -- by Shengjie
 
-	PSKBalanceZeroWaveMake(18000,10)
-	PSKLargeZeroWaveMake(18000,10)
-	
+	#PSKBalanceZeroWaveMake(18000,10)
+	#PSKLargeZeroWaveMake(18000,10)
+	PSKSequenceZeroTwoPathWaveMake(18000,10)
