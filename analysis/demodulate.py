@@ -152,7 +152,7 @@ input:	digitalsignal	list of the digital signals after modulated
 output:	newlist		the regulated list
 '''
 def _signaltest(digitalsignal,ratio,debug=0):
-	num = 20
+	num = 5
 	#Note : For ideal signal, the 'num' should be 5 --From Shengjie
 	target = [0]*num
 	verifylist = []
@@ -193,5 +193,6 @@ def _regulate(digitalsignal,ratio=10,debug=0):
 
 if __name__ == '__main__':
 	#dePSK_ideal('../makewave/18000Hz_10s_PSKSequenceZero.wav','18000Hz_ideal.csv',debug=1)
+	dePSK_ideal('../makewave/18000Hz_10s_PSKSequenceZeroTwoPath.wav','18000Hz_ideal_twopath.csv',debug=1)
 	#dePSK_ideal('18000_test.wav','18000Hz_test.csv',debug=1)
-	dePSK_ideal('18000_hand.wav','18000_hand.csv',debug=1)
+	#dePSK_ideal('18000_hand.wav','18000_hand.csv',debug=1)
