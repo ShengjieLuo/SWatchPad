@@ -15,10 +15,11 @@ Build the audio wireless tracking platform - SJTU Network Lab
 * _**[New!]**_ The distance measurement is almost the same to Alex Liu. L1=2.10cm, L2=11.95cm.
 
 ###Work on Track
-* _**[New!]**_ Our devices only has one microphone. so We add an additional microphone on the top of the smartphon. It's not perfect. But it can work. After I analyse the Android source code, I find it's hard to use the different microphone to record different soundwave at the same device at the same time. There is a conflict inside the android. I will try it in the later days again..
+* _**[New!]**_ Our devices only has one microphone. so We add an additional microphone on the top of the smartphon. It's not perfect. But it can work. After Bo analyse the Android source code, Bo find it's hard to use the different microphone to record different soundwave at the same device at the same time. There is a conflict inside the android. Bo will try it in the later days again..
 
 ###Work in plan
 * _**[New!]**_ _**[HighLight!]**_ We would test it next Monday 11/14 night.
+* Bo will continue to complete the hardware
 
 ##OFDM Audio Signal
 ###Work Have Done
