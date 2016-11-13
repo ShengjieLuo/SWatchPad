@@ -14,8 +14,8 @@ Build the audio wireless tracking platform - SJTU Network Lab
 * _**[New!]**_ _**[HighLight!]**_ We have finished the TDoA method of PSK Audio Signal. Time difference between two paths is employed to measure the 1D distance. The theorical error is lower than 1 cm in our experiments. TDoA would be a critical part of out paper!
 
 ###Work on Track
-* _**[New!]**_ Bo would cover the transformation from 1D distance to 2D distance. It is a solid geometry problem within sort of calculation. We predict it would be solved in this weekend.
-* _**[New!]**_ Bo would continue the hardware improvement. The final hardware improvement would be determined in this weekend.
+* _**[New!]**_ The distance measurement is almost the same to Alex Liu. L1=2.10cm, L2=11.95cm..
+* _**[New!]**_ Our devices only has one microphone. so We add an additional microphone on the top of the smartphon. It's not perfect. But it can work. After I analyse the Android source code, I find it's hard to use the different microphone to record different soundwave at the same device at the same time. There is a conflict inside the android. I will try it in the later days again..
 
 ###Work in plan
 * _**[New!]**_ _**[HighLight!]**_ We would test it next Monday 11/14 night.
