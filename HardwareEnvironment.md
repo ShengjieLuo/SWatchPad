@@ -3,7 +3,7 @@
 ##
 ###Graph and describe
 
-![Graph](./Device_outlooking.png)
+![Graph](http://ogkydloun.bkt.clouddn.com/Device_outlooking.png)
 
 
 *	Because our device only has one mic, we add a mic on the top of the device and receive the sound by computer.
