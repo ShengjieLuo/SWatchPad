@@ -12,9 +12,9 @@ Build the audio wireless tracking platform - SJTU Network Lab
 * We have demodulated（解调） the audio signal into digital signal. The method used is 差分相干解调. NOt only the ideal wave passed the test, also the wave recorded by mobile phone passed the test. We now have a mature modulate-demodulate method.
 * We separates two different waves, one spreads from speaker to microhphone directly, and another one reflected by user's hand. The time difference is observed from the PSK demodulated result.
 * _**[New!]**_ _**[HighLight!]**_ We have finished the TDoA method of PSK Audio Signal. Time difference between two paths is employed to measure the 1D distance. The theorical error is lower than 1 cm in our experiments. TDoA would be a critical part of out paper!
+* _**[New!]**_ The distance measurement is almost the same to Alex Liu. L1=2.10cm, L2=11.95cm.
 
 ###Work on Track
-* _**[New!]**_ The distance measurement is almost the same to Alex Liu. L1=2.10cm, L2=11.95cm..
 * _**[New!]**_ Our devices only has one microphone. so We add an additional microphone on the top of the smartphon. It's not perfect. But it can work. After I analyse the Android source code, I find it's hard to use the different microphone to record different soundwave at the same device at the same time. There is a conflict inside the android. I will try it in the later days again..
 
 ###Work in plan
