@@ -325,14 +325,14 @@ Output: the filename of the audio file
 Version:
 0.1     master branch   Author:Luo      Date:11/13
 '''
-def PSKSequenceZeroTwoPathWaveMake(freq,time):
+def PSKSequenceZeroTwoPathWaveMake(freq,time,interval):
         MAX_AMPLITUDE = 32767/2
         SAMPLE_RATE = 44100
         DURATION_SEC = time
-	TIME_INTERVAL = 2
+	TIME_INTERVAL = interval
         VELOCITY = 34300
 	SAMPLE_LEN =  SAMPLE_RATE * DURATION_SEC
-        filename = './'+ str(freq) + 'Hz_'+ str(DURATION_SEC) + 's_PSKSequenceZeroTwoPath.wav'
+        filename = './'+ str(freq) + 'Hz_'+ str(DURATION_SEC) + 's_'+str(interval)+'p_PSKSequenceZeroTwoPath.wav'
         print "Creating sound file:", filename
         print "Sample rate:", SAMPLE_RATE
         print "Duration (sec):", DURATION_SEC
@@ -399,4 +399,8 @@ if __name__ == "__main__":
 
 	#PSKBalanceZeroWaveMake(18000,10)
 	#PSKLargeZeroWaveMake(18000,10)
-	PSKSequenceZeroTwoPathWaveMake(18000,10)
+	#PSKSequenceZeroTwoPathWaveMake(18000,10,2)
+	PSKSequenceZeroTwoPathWaveMake(18000,10,2)
+	PSKSequenceZeroTwoPathWaveMake(18000,10,1)
+	PSKSequenceZeroTwoPathWaveMake(18000,10,1.5)
+	

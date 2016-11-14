@@ -84,6 +84,7 @@ def _pointdiff(psklist,samplerate,additionalratio,debug=0):
 	psklist1 , zerorange = [],[]
 	num = 3
 	zero_count1 = 0
+	left_limit,right_limit = -1,-1
 	for i in range(1,len(psklist)):
 		flag = 0	
 		for j in psklist[i-num:i+num]:
@@ -91,6 +92,8 @@ def _pointdiff(psklist,samplerate,additionalratio,debug=0):
 				flag = 1
 				break
 		if flag == 0:
+			if left_limit <= i and right_limit >= i:
+				continue
 			left_limit,right_limit = i,i
 			while 1:
 				left_limit -= 1
@@ -124,17 +127,28 @@ def _pointdiff(psklist,samplerate,additionalratio,debug=0):
 	zerorange = tmpzerorange
 	tmpzerorange = []
 	threshold = 10
-	i = 0
+	i ,overlap = 0,0
 	while 1:
-		if abs(zerorange[i+1][0] - zerorange[i][1])<threshold:
+		flag = 0
+		if zerorange[i+1][0] - zerorange[i][1]<threshold:
 			tmpzerorange.append((zerorange[i][0],zerorange[i+1][1]))
+			overlap,flag = 1,1
+			i += 1
 		else:
 			tmpzerorange.append(zerorange[i])
 		i += 1
-		if i >= len(zerorange)-1:
-			break
-	zerorange = tmpzerorange
-
+		if i >= len(zerorange) - 1:
+			if flag == 0:
+				tmpzerorange.append(zerorange[i])
+			i = 0
+			zerorange = tmpzerorange
+			tmpzerorange = []
+			if overlap == 0:
+				break
+			else:
+				overlap = 0
+				print len(zerorange)
+	'''
 	tmpzerorange = []
 	i = 0
 	while 1:
@@ -148,10 +162,14 @@ def _pointdiff(psklist,samplerate,additionalratio,debug=0):
 		if i >= len(zerorange)-1:
 			break
 	zerorange = tmpzerorange
+	'''
+	#******************************************************************
+	
+
 
 
 	#******************************************************************
-	# Step 3: Cluster in zerorange                                            *
+	# Step 3: Cluster in zerorange                                    *
 	# 1. Change the zerorange info into the point difference between  *
 	#    two ranges. For example, range (0,7) and (10,17) --> 3       *
 	# 2. Clustering the zerodiff to find the major feature            *
@@ -186,10 +204,10 @@ def _pointdiff(psklist,samplerate,additionalratio,debug=0):
 		print "  [Debug]  The zero signal after filtering: ",len(zerorange)
 		print "  [Debug]  The zero range: ",zerorange
 		print "  [Debug]  The difference between two ranges: ",zerodiffs
-		print "  [Debug]  The center of the difference group: "
-		for i in clusterGroup:
-			string = str(int(i))+' '
-		print string + '\n'
+		print "  [Debug]  The center of the difference group: ",clusterGroup
+		#for i in clusterGroup:
+		#	string = str(int(i))+' '
+		#print string + '\n'
 		print "  [Debug]  The distribution of the cluster group: ",clusterCount
 		print "  [Debug]  The point difference between two paths: ",diff
 	

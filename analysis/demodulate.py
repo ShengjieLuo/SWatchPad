@@ -79,7 +79,7 @@ def _getRefFreq(wavfile,debug=0):
 	freqdata,energydata = fft_ffttran(wavfile,16000,20000,flag=1)
 	peakcount , peaksum = 0 ,0 
 	for i in range(1,len(freqdata)-1):
-		if energydata[i]>400 and energydata[i]>energydata[i-1] and energydata[i]>energydata[i+1]:
+		if energydata[i]>200 and energydata[i]>energydata[i-1] and energydata[i]>energydata[i+1]:
 			peakcount += energydata[i]
 			peaksum += energydata[i]*freqdata[i]
 	reffreq = (peaksum+0.0)/peakcount
@@ -102,8 +102,14 @@ def _freqadd(wavlist,ratio=10,debug=0):
 	x_new = np.linspace(1,len(wavlist),len(wavlist)*ratio)
 	tck = interpolate.splrep(x, y)
 	y_bspline = interpolate.splev(x_new, tck)
-	if debug == 1:	
+	if debug == 1:
 		print "  [Debug]  Points after addition:",len(y_bspline)
+		fp = open("test.csv","wb")
+		string = ""
+		for i in range(1020600,1022350):
+			string = string + str(y_bspline[i]) +"\n"
+		fp.write(string)
+		fp.close()
 	return y_bspline
 
 '''
@@ -129,6 +135,14 @@ def _demodulate(wavlist,reffreq,ratio=10,debug=0):
 		else:
 			digitalsignal.append(0)
 	#_test(digitalsignal)
+	if debug == 1:
+		fp = open("test2.csv","wb")
+                string = ""
+                for i in range(1020600,1022350):
+                        string = string + str(digitalsignal[i]) +"\n"
+                fp.write(string)
+                fp.close()
+	digitalsignal = digitalsignal[1000000:]
 	return digitalsignal
 
 '''

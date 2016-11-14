@@ -57,7 +57,7 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	if flag==1:
 		print "  [Debug]  The Primary Frequency Peak"
 		for i in range(len(xdata)):
-			if ydata[i]>400:
+			if ydata[i]>30:
 				print "    freq: "+str(xdata[i])+" energy: "+str(ydata[i])
 	return xdata,ydata
 
@@ -106,4 +106,4 @@ def _waveFreqData(name,freq,c,index_begin,index_end,length):
 
 if __name__=='__main__':
 	#fftHann('18000Hz_10s_PSKSequenceZero.wav',0,20000,1)
-	ffttran('18000_test.wav',0,4000,1)
+	ffttran('test11_13_2.wav',0,20000,1)

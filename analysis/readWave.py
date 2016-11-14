@@ -57,7 +57,7 @@ def _readwave(inputname):
         wave_data = np.fromstring(str_data, dtype=np.short)
         wave_data = wave_data.T
 	wave_list = wave_data.tolist()
-	#print wave_list[6000:8000]
+	#print wave_list[2000:6000]
 	#print len(wave_list)
 	return wave_list
 
@@ -75,7 +75,17 @@ def _list2csv(wavlist,csvname):
 	writer.writerow(wavlist)
 	csvfile.close()
 
+def showwave(wavfile):
+	wavlist = wave2list(wavfile)
+	wavlist = wavlist[:1000]
+	_list2csv(wavlist,wavfile[:-4]+"_show1000points.csv")	
+
 if __name__=="__main__":
 	#wave2list("1.wav")
 	#wave2list("seqPSK.wav")
-	wave2csv("2000_test.wav","2000_test.csv")
+	#wave2csv("2000_test.wav","2000_test.csv")
+	showwave('18000Hz_10s_1.5p_PSKSequenceZeroTwoPath.wav')
+	showwave('18000Hz_10s_1p_PSKSequenceZeroTwoPath.wav')
+	showwave('18000Hz_10s_2p_PSKSequenceZeroTwoPath.wav')
+	
+	
