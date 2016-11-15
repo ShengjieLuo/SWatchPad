@@ -26,14 +26,14 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 			i += 1
 		if i >= len(psklist):
 			break
-	print zerorange[:10]
+	#print zerorange[:10]
 
 	tmpzerorange = []
 	for i in range(len(zerorange)):
 		if zerorange[i][1] - zerorange[i][0] > 10:
 			tmpzerorange.append(zerorange[i])
 	zerorange = tmpzerorange
-	print zerorange[:100]
+	#print zerorange[:100]
 
 	peakrange = []
 	threshold = 10000
@@ -44,15 +44,14 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 		else:
 			peakrange.append((left_limit,right_limit))
 			left_limit,right_limit = zerorange[i][0] , zerorange[i][1]
-	print peakrange
+	#print peakrange
 
 	testrange = []
 	for i in range(1,len(peakrange)):
 		interval = (peakrange[i][0] - peakrange[i-1][1])/490
 		testrange.append(interval)
-	print testrange
+	#print testrange
 
-	#print psklist[peakrange[0][0]-100:peakrange[0][1]+100]
 	'''
 	disrange = []
 	interval = 10
@@ -93,15 +92,17 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 	                if j >= peakrange[i][1]:
         	                break
 		oneMax = 0
-		if i == 1:
-			print onerange
+		#if i == 1:
+		#	print onerange
 		for k in onerange:
 			tmp = k[1] - k[0]			
 			if tmp<300 and tmp>oneMax:
 				oneMax = tmp
 		result.append(oneMax)
-	print result
-	print sum(result)/len(result)
+	if debug==1:
+		print "  [Debug]  The range between neighbor peaks: ",testrange
+		print "  [Debug]  The sample point difference list: ",result
+		print "  [Debug]  The final sample point difference: ",sum(result)/len(result)
 	return sum(result)/len(result)
 	'''
         peakrange = []
@@ -126,4 +127,6 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
                         break
 	print peakrange
 	'''
-#pointdiff([1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,01,1,0,0,1,1,0,0,0,0,1,1],44100,10,0)
+
+if __name__=='__main__':
+	pointdiff([1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,01,1,0,0,1,1,0,0,0,0,1,1],44100,10,0)

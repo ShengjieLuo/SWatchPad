@@ -32,7 +32,7 @@ def dePSK_ideal(wavfile,outputfile,debug=0):
 	wavlistFilter = _listfilter(wavlist,debug)
 	wavlistAdd = _freqadd(wavlistFilter,ratio,debug)
 	digitalsignal = _demodulate(wavlistAdd,reffreq,ratio,debug)
-	_signaltest(digitalsignal,ratio,debug)
+	#_signaltest(digitalsignal,ratio,debug)
 	#PSKsignal = _regulate(digitalsignal,debug)
 	_list2csv(digitalsignal,outputfile)
 	return digitalsignal
@@ -123,8 +123,8 @@ def _demodulate(wavlist,reffreq,ratio=10,debug=0):
 	sampleRate = 44100.0*ratio 		#经过处理后，每秒采样的个数
 	cycleRate = reffreq			#每秒采样的周期数
 	point_per_cycle = sampleRate/cycleRate	#每个周期对应的采样点个数
-	wavlist_original = wavlist[round(point_per_cycle):] #原始波形
-	wavlist_difference = wavlist[:len(wavlist)-round(point_per_cycle)] #差分相干波形
+	wavlist_original = wavlist[int(round(point_per_cycle)):] #原始波形
+	wavlist_difference = wavlist[:int(len(wavlist)-round(point_per_cycle))] #差分相干波形
 	if debug == 1:
 		print "  [Debug]  Sample point per signal cycle: ",point_per_cycle
 	digitalsignal = []

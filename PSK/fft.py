@@ -54,11 +54,13 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	index_begin = _waveIndexBegin(freq,c,leftlimit)
 	index_end = _waveIndexEnd(freq,c,rightlimit)
 	xdata,ydata = _waveFreqData(name,freq,c,index_begin,index_end,N)
+	'''
 	if flag==1:
 		print "  [Debug]  The Primary Frequency Peak"
 		for i in range(len(xdata)):
 			if ydata[i]>100:
 				print "    freq: "+str(xdata[i])+" energy: "+str(ydata[i])
+	'''
 	return xdata,ydata
 
 '''
