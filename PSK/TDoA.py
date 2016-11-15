@@ -1,0 +1,254 @@
+#coding:utf-8
+
+'''
+Name: TDoA
+Effect: To calculate the Time Difference of Arrival (TDoA)
+TDoA is a popular method to measure the 1D distance.
+Give an example here: 
+There are two different audio wave spreading path. The first path is from the speaker to the microphone directly,
+and the second path is reflected by user's hand.
+Obviously, two different spreading path would lead to the time difference of Arrival
+The distance difference = time difference * audiowave velocity = point difference / sample rate * audiowave velocity
+Version
+0.1	Luo	Master branch
+	The initial branch
+'''
+
+import csv
+from sklearn.cluster import KMeans
+
+'''
+Function:TDoA()
+Effect: the key function in TDoA distance measuring
+
+input1:	signalcsv	the name of the csv file within digital PSK signal 0/1
+input2:	directpath	the length of direct path. Default value, 6 cm.
+input3: samplerate	the samplerate of the wave file. Default value, 44100.
+input4: additionalratio	the ratio (sample points after addition):(original sample points). Default value, 10.
+input5:	debug		the debug flag. If debug = 1, verbose the debug information
+output:	reflectpath	the length of the reflected path
+'''
+
+def TDoA(signalcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
+	psklist 	= _csv2list(signalcsv,debug)
+	diff 		= _pointdiff(psklist,samplerate,additionalratio,debug)
+	distance 	= _point2distance(samplerate,additionalratio,diff,debug)
+	reflect 	= _pathdistance(distance,directpath,debug)
+	return reflect	
+
+'''
+FUnction: _csv2list()
+input:	csvfile
+input: 	debug
+output:	psklist
+'''
+def  _csv2list(csvfile,debug): 
+	reader = csv.reader(file(csvfile,'rb'))  
+	for line in reader:
+  		psklisttmp = line
+    	psklist = []
+	for i in psklisttmp:
+		if i == '0':
+			psklist.append(0)
+		else:
+			psklist.append(1)
+	if debug==1:
+		print "  [Debug]  Total number of digital PSK signals: ",len(psklist)
+	return psklist
+
+'''
+Function: _pointdiff()
+input:	psklist		the data structure of the PSK digital signal
+input:	debug		debug flag. If debug = 1,verbose the debug infomation
+output:	diff		the point difference of signals from two path
+'''
+def _pointdiff(psklist,samplerate,additionalratio,debug=0):
+	
+	
+	#******************************************************************
+	# Step 0 : Print original infomation                              *
+	# 1. Count the zero number in the signal list			  *
+	#******************************************************************
+	zero_count0 = 0
+	for i in range(len(psklist)):
+		if psklist[i]==0:
+			zero_count0 += 1
+		
+	#******************************************************************
+	# Step 1 : Locate the continuous zero signal                      *
+	# 1. Locate the continuous zero signal, the number of  continuous *
+	#    signal numbers should be larger than 2*num 		  *
+	# 2. Record the left_limit and right_limit of the continuous	  *
+	#    zero signals, we call it zerorange.			  *
+	#******************************************************************
+	psklist1 , zerorange = [],[]
+	num = 10
+	zero_count1 = 0
+	left_limit,right_limit = -1,-1
+	for i in range(1,len(psklist)):
+		flag = 0	
+		for j in psklist[i-num:i+num]:
+			if j==1:
+				flag = 1
+				break
+		if flag == 0:
+			if left_limit <= i and right_limit >= i:
+				continue
+			left_limit,right_limit = i,i
+			while 1:
+				left_limit -= 1
+				try:
+					if psklist[left_limit] == 1:
+						break
+					else:
+						continue
+				except:
+					break
+			while 1:
+				right_limit += 1
+				try:
+					if psklist[right_limit] == 1:
+						break
+					else:
+						continue
+				except:
+					break
+			zerorange.append((left_limit,right_limit))
+	tmpzerorange=list(set(zerorange))
+	tmpzerorange.sort(key=zerorange.index)	
+	
+	
+	#******************************************************************
+	# Step 2: improve the zero signal                                 *
+	# 1. Merge the neighbor zero ranges into one zero range.          *
+	#    if points between two zero ranges are fewer than threshold,  *
+	#    we would merge them and regard the gap as an outlier         *
+	#******************************************************************
+	zerorange = tmpzerorange
+	tmpzerorange = []
+	threshold = 25
+	i ,overlap = 0,0
+	while 1:
+		flag = 0
+		if zerorange[i+1][0] - zerorange[i][1]<threshold:
+			tmpzerorange.append((zerorange[i][0],zerorange[i+1][1]))
+			overlap,flag = 1,1
+			i += 1
+		else:
+			tmpzerorange.append(zerorange[i])
+		i += 1
+		if i >= len(zerorange) - 1:
+			if flag == 0:
+				tmpzerorange.append(zerorange[i])
+			i = 0
+			zerorange = tmpzerorange
+			tmpzerorange = []
+			if overlap == 0:
+				break
+			else:
+				overlap = 0
+	'''
+	tmpzerorange = []
+	i = 0
+	while 1:
+		if zerorange[i][1] >= zerorange[i+1][1]:
+			tmpzerorange.append(zerorange[i])
+			i += 1
+		else:	
+			tmpzerorange.append(zerorange[i])
+		i += 1
+		#print i,len(zerorange)
+		if i >= len(zerorange)-1:
+			break
+	zerorange = tmpzerorange
+	'''
+	#******************************************************************
+	
+
+
+
+	#******************************************************************
+	# Step 3: Cluster in zerorange                                    *
+	# 1. Change the zerorange info into the point difference between  *
+	#    two ranges. For example, range (0,7) and (10,17) --> 3       *
+	# 2. Clustering the zerodiff to find the major feature            *
+	#******************************************************************
+	zerodiffs = []
+	REF_FREQ = 18000
+	CLUSTER_NUM = 50
+	POINT_PER_PERIOD = int(round(samplerate * additionalratio / REF_FREQ))
+	for i in range(len(zerorange)-1):
+		zerodiff = zerorange[i+1][0]-zerorange[i][1]
+		if zerodiff < 0:
+			zerodiff = POINT_PER_PERIOD + zerodiff
+		zerodiffs.append(zerodiff)
+	clustertmp = []
+	for i in zerodiffs:
+		clustertmp.append([float(i)])
+	clf = KMeans(CLUSTER_NUM)
+	s = clf.fit(clustertmp)
+	clusterGroup = clf.cluster_centers_
+	clusterLabel = clf.labels_
+	clusterCount = [0] * CLUSTER_NUM
+	for i in clusterLabel:
+		clusterCount[i] = clusterCount[i] + 1
+	clusterCandidate = []
+	for i in range(len(clusterCount)):
+		if clusterCount[i]>sum(clusterCount)/10  and clusterGroup[i][0]<300:
+			clusterCandidate.append(clusterGroup[i][0])
+	clusterMax = max(clusterCandidate)
+	diff = clusterMax
+	
+	#******************************************************************
+	# DEBUG_INFO                                                      *
+	#******************************************************************
+	if debug == 1:
+		print "  [Debug]  The original zero signal: ",zero_count0
+		print "  [Debug]  The zero signal after filtering: ",len(zerorange)
+		print "  [Debug]  The zero range: ",zerorange
+		print "  [Debug]  The difference between two ranges: ",zerodiffs
+		print "  [Debug]  The center of the difference group: "
+		string = ""
+		for i in clusterGroup:
+			string = string + str(int(i[0]))+' '
+		print string + '\n'
+		print "  [Debug]  The distribution of the cluster group: ",clusterCount
+		print "  [Debug]  The candidate of the final difference: ",clusterCandidate
+		print "  [Debug]  The point difference between two paths: ",diff
+	
+	return diff
+
+'''
+Function: _point2distance()
+Effect:	Translate the point difference into the distance difference
+input1:	srate		the samplerate of the wave file. Default value, 44100.
+input2:	ratio		the ratio (sample points after addition):(original sample points). Default value, 10.
+input3:	diff		the point difference of signals from two path
+#input4:	velocity	the velocity of the audio wave. Defualt value, 34300
+input4:	debug		debug flag. If debug = 1,verbose the debug infomation
+output:	distance	the distance we get.
+'''
+def _point2distance(srate,ratio,diff,debug):
+	pointRate = srate * ratio	
+	distance = (diff + 0.0) / pointRate * 34300.00
+	if debug == 1:
+		print "  [Debug]  The distance difference:(cm) ", distance
+	return distance
+
+'''
+Function: _pathdistance
+Effect:	Calculate the reflected distance
+input1:	distanceDiff	the distance difference between two paths
+input2:	directpath	the distance of the first direct path
+output:	reflectpath	the distance of the second reflected path
+'''
+def _pathdistance(distanceDiff,directpath,debug):
+	reflectpath = directpath + distanceDiff
+	if debug == 1:
+		print "  [Debug]  The distance of the Direct path(cm):  ",directpath
+		print "  [Debug]  The distance of the Reflected path(cm): ",reflectpath
+	return reflectpath
+
+if __name__ == '__main__':
+	#TDoA('18000Hz_ideal.csv',debug=1)
+	TDoA('18000Hz_ideal_twopath.csv',debug=1)
