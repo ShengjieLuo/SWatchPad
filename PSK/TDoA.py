@@ -16,6 +16,7 @@ Version
 
 import csv
 from sklearn.cluster import KMeans
+from DiffNew import pointdiff as pd
 
 '''
 Function:TDoA()
@@ -31,7 +32,7 @@ output:	reflectpath	the length of the reflected path
 
 def TDoA(signalcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
 	psklist 	= _csv2list(signalcsv,debug)
-	diff 		= _pointdiff(psklist,samplerate,additionalratio,debug)
+	diff 		= pd(psklist,samplerate,additionalratio,debug)
 	distance 	= _point2distance(samplerate,additionalratio,diff,debug)
 	reflect 	= _pathdistance(distance,directpath,debug)
 	return reflect	
