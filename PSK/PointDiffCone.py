@@ -75,7 +75,7 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
         	                j += 1
                 	        while 1:
                         	        try:
-                                	        if sum(psklist[j:j+10])>=7:
+                                	        if sum(psklist[j:j+10])>=8:
                                         	        right_limit = j
                                                 	j += 1
 	                                                flag = 1
@@ -96,7 +96,8 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 		#	print onerange
 		for k in onerange:
 			tmp = k[1] - k[0]			
-			if tmp<300 and tmp>oneMax:
+			if tmp<200 and tmp>oneMax:
+			#if tmp>oneMax:
 				oneMax = tmp
 		result.append(oneMax)
 	if debug==1:
