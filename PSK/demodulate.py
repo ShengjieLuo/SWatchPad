@@ -19,6 +19,7 @@ import pylab as pl
 import pdb
 from scipy import interpolate 
 from readWave import wave2list as readWave_wave2list
+from multiplex import demulti as _demulti
 from fft import ffttran as fft_ffttran
  
 '''
@@ -37,6 +38,15 @@ def dePSK_ideal(wavfile,outputfile,debug=0):
 	_list2csv(digitalsignal,outputfile)
 	return digitalsignal
 
+def dePSK_multi(wavfile,reffreq,outputfile,debug=0):
+	ratio = 10
+	wavlist = _demulti(wavfile)
+        wavlistFilter = _listfilter(wavlist,debug)
+        wavlistAdd = _freqadd(wavlistFilter,ratio,debug)
+        digitalsignal = _demodulate(wavlistAdd,reffreq,ratio,debug)
+        _list2csv(digitalsignal,outputfile)
+        return digitalsignal
+	
 '''
 Function: _wav2list()
 说明：私有函数，用于将csv格式的数据转化为List数据结构

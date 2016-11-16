@@ -29,6 +29,7 @@ for i in range(int(441000*(16.5/44)),int(441000*(17.5/44))):
     xf_complex[i]=0+0.00000000e+00j;# remove the 17Khz in Frequency domain
 
 XF_complex=np.fft.ifft(xf_complex)
+
 showdata(XF_complex,'test_for_complex.csv')
 # if this method can filter17Khz, test_for_complex.csv should be the same to 18000Hz_10s_PSKBalanceZero.csv ,but its not.
 

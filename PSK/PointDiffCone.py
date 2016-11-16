@@ -29,8 +29,9 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 	#print zerorange[:10]
 
 	tmpzerorange = []
+	threshold = 5
 	for i in range(len(zerorange)):
-		if zerorange[i][1] - zerorange[i][0] > 10:
+		if zerorange[i][1] - zerorange[i][0] > 5:
 			tmpzerorange.append(zerorange[i])
 	zerorange = tmpzerorange
 	#print zerorange[:100]

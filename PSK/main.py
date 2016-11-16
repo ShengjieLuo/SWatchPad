@@ -9,6 +9,7 @@ Version:
 '''
 
 from demodulate import dePSK_ideal as dePSK 
+from demodulate import dePSK_multi as dePSK_multi
 from TDoA import TDoA
 from xymeasure import xydistance
 import sys
@@ -29,7 +30,13 @@ def PSK1Dmain(wave,l,samplerate,additionalratio,debug):
 	distance = TDoA(signalcsv,l,samplerate,additionalratio,debug)
 	return distance
 
-if __name__=="__main__":
+def PSKMulti(wave,l,samplerate,additionalratio,debug):
+	signalcsv = wave[:-4]+".csv"
+	dePSK_multi(wave,18000,signalcsv,debug)
+	distance = TDoA(signalcsv,l,samplerate,additionalratio,debug)
+	return
+
+if  __name__=="__main__":
 	#print PSK2Dmain('../makewave/18000Hz_10s_PSKSequenceZeroTwoPath.wav','../makewave/18000Hz_10s_PSKSequenceZeroTwoPath.wav',2.10,11.95,44100,10,1)
 	#print PSK1Dmain('./test11_13_2.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/hand/Name0105.wav.wav',11.95,44100,10,1)
@@ -40,4 +47,5 @@ if __name__=="__main__":
 	#print PSK1Dmain('../testwave/pen/Name0114.wav.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/pen/Name0115.wav.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/pen/Name0116.wav.wav',11.95,44100,10,1)
-	PSK1Dmain(sys.argv[1],11.95,44100,10,1)
+	#PSK1Dmain(sys.argv[1],11.95,44100,10,1)
+	PSKMulti(sys.argv[1],11.95,44100,10,1)
