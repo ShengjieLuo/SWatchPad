@@ -29,7 +29,7 @@ Version:
         THe initial version
 '''
 
-def ffttran(name,leftlimit,rightlimit,flag=0):
+def ffttran(name,start,N,leftlimit,rightlimit,flag=0):
 	#matplotlib.use('Agg') 
 	wf = wave.open(name, "rb")
 	nframes = wf.getnframes()
@@ -40,7 +40,7 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	str_data = wf.readframes(framerate)
 	wf.close()
 	wave_data = np.fromstring(str_data, dtype=np.short)
-	N=len(wave_data)
+	#N=len(wave_data)
 	start=0 #开始采样位置
 	df = framerate/(N-1.0) # 分辨率
 	if flag==1:

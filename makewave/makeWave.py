@@ -24,6 +24,39 @@ import math
 import struct
 
 
+'''
+Function: SimpleWaveMake(freq,time)
+Effect: make the soundwave file with simple wave and one channel
+Input1: freq1 the frequency used in audio
+Input2: time length of the audio
+Output: the filename of the audio file
+Version:
+0.1     master branch   Author:luo      Date:11/09
+        the fundamental version
+'''
+def simpleWaveMake(freq,time):
+        MAX_AMPLITUDE = 32767
+        SAMPLE_RATE = 44100
+        DURATION_SEC =  time
+        SAMPLE_LEN = SAMPLE_RATE * DURATION_SEC
+        filename = './'+ str(freq) + 'Hz_'+ str(DURATION_SEC) + 's_simple.wav'
+        print "Creating sound file:", filename
+        print "Sample rate:", SAMPLE_RATE
+        print "Duration (sec):", DURATION_SEC
+        print "# samples:", SAMPLE_LEN
+        wavefile = wave.open(filename, 'w')
+        wavefile.setparams((1, 2, SAMPLE_RATE, 0, 'NONE', 'not compressed'))
+        samples = []
+        for i in range(SAMPLE_LEN):
+                t = float(i) / SAMPLE_RATE
+                sample = MAX_AMPLITUDE * math.sin(t * freq * 2 * math.pi)
+                packed_sample = struct.pack('h', sample)
+                samples.append(packed_sample)
+        sample_str = ''.join(samples)
+        wavefile.writeframes(sample_str)
+        wavefile.close()
+        return filename
+
 
 '''
 Function: SimpleDoubleWaveMake(freq1,freq2,time)
@@ -447,4 +480,5 @@ if __name__ == "__main__":
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,2)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,1)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,1.5)
-	PSKComplexZeroWaveMake(18000,17000,10)
+	#PSKComplexZeroWaveMake(18000,17000,10)
+	simpleWaveMake(17000,10)
