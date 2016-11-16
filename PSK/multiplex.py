@@ -17,6 +17,3 @@ def demulti(wavename):
 	XF_complex=np.fft.ifft(xf_complex)
 	return XF_complex
 
-
-
-

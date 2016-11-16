@@ -16,7 +16,8 @@ Version
 
 import csv
 from sklearn.cluster import KMeans
-from PointDiffCone import pointdiff as _pd
+#from PointDiffCone import pointdiff as _pd
+from PointDiffDensity import pointdiff as _pd
 
 '''
 Function:TDoA()

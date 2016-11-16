@@ -4,7 +4,7 @@ from peak import waveFreqShift as _freqshift
 from readWave import wavelength as _wavelength
 from velocity import VelocityCal as _velocity
 
-def dopplerMain(wavfile1,wavfile2,x0,y0,debug=0):
+def dopplermain(wavfile1,wavfile2,x0,y0,debug=0):
 
 	leftLimit = 16000
 	rightLimit = 18000

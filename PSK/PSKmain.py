@@ -30,7 +30,13 @@ def PSK1Dmain(wave,l,samplerate,additionalratio,debug):
 	distance = TDoA(signalcsv,l,samplerate,additionalratio,debug)
 	return distance
 
-def PSKMulti(wave,l,samplerate,additionalratio,debug):
+def PSK2DMulti(wave1,wave2,l1,l2,samplerate,additionalratio,debug):
+	distance1 = PSK1DMulti(wave1,l1,samplerate,additionalratio,debug)
+	distance2 = PSK1DMulti(wave2,l2,samplerate,additionalratio,debug)
+	x,y = xydistance(l1,l2,distance1,distance2)
+	return x,y	
+
+def PSK1DMulti(wave,l,samplerate,additionalratio,debug):
 	signalcsv = wave[:-4]+".csv"
 	dePSK_multi(wave,18000,signalcsv,debug)
 	distance = TDoA(signalcsv,l,samplerate,additionalratio,debug)
@@ -47,5 +53,5 @@ if  __name__=="__main__":
 	#print PSK1Dmain('../testwave/pen/Name0114.wav.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/pen/Name0115.wav.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/pen/Name0116.wav.wav',11.95,44100,10,1)
-	#PSK1Dmain(sys.argv[1],11.95,44100,10,1)
-	PSKMulti(sys.argv[1],11.95,44100,10,1)
+	PSK1Dmain(sys.argv[1],11.95,44100,10,1)
+	#PSKMulti(sys.argv[1],11.95,44100,10,1)
