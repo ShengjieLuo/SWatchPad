@@ -29,7 +29,8 @@ FUnction: dePSK_ideal(wavlist)
 def dePSK_ideal(wavfile,outputfile,debug=0):
 	ratio = 10
 	wavlist = _wav2list(wavfile)
-	reffreq = _getRefFreq(wavfile,debug)
+	#reffreq = _getRefFreq(wavfile,debug)
+	reffreq = 18000
 	wavlistFilter = _listfilter(wavlist,debug)
 	wavlistAdd = _freqadd(wavlistFilter,ratio,debug)
 	digitalsignal = _demodulate(wavlistAdd,reffreq,ratio,debug)
@@ -129,7 +130,7 @@ input:	wavlist		the data structure of the filtered additional audio sample
 input:	ref		the reference frequency
 output:	signallist	the data structure of the demodulated digital signal
 '''
-def _demodulate(wavlist,reffreq,ratio=10,debug=0):
+def _demodulate(wavlist,reffreq,ratio=10,debug=1):
 	sampleRate = 44100.0*ratio 		#经过处理后，每秒采样的个数
 	cycleRate = reffreq			#每秒采样的周期数
 	point_per_cycle = sampleRate/cycleRate	#每个周期对应的采样点个数

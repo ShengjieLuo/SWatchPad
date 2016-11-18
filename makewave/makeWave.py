@@ -255,7 +255,7 @@ def PSKBalanceZeroWaveMake(freq,time):
         wavefile = wave.open(filename, 'w')
         wavefile.setparams((1, 2, SAMPLE_RATE, 0, 'NONE', 'not compressed'))
         samples , DEBUG_SAMPLES= [], []
-        PSK_INTERVAL = SAMPLE_LEN / freq * 60
+        PSK_INTERVAL = SAMPLE_LEN / freq * 140
 	PSK_CONVERT = [0]
 	flag = 1
 	while 1:
@@ -474,11 +474,11 @@ if __name__ == "__main__":
         #Note:  please use (18000,10x) as the default parameter in this function
         #       Otherwise the PSK convert-phase cannot be guaranteed -- by Shengjie
 
-	#PSKBalanceZeroWaveMake(18000,10)
+	PSKBalanceZeroWaveMake(18000,10)
 	#PSKLargeZeroWaveMake(18000,10)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,2)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,2)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,1)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,1.5)
 	#PSKComplexZeroWaveMake(18000,17000,10)
-	simpleWaveMake(17000,10)
+	#simpleWaveMake(17000,10)

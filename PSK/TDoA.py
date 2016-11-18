@@ -16,8 +16,8 @@ Version
 
 import csv
 from sklearn.cluster import KMeans
-#from PointDiffCone import pointdiff as _pd
-from PointDiffDensity import pointdiff as _pd
+from PointDiffCone import pointdiff as _pd
+#from PointDiffDensity import pointdiff as _pd
 
 '''
 Function:TDoA()
@@ -33,10 +33,13 @@ output:	reflectpath	the length of the reflected path
 
 def TDoA(signalcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
 	psklist 	= _csv2list(signalcsv,debug)
-	diff 		= _pd(psklist,samplerate,additionalratio,debug)
-	distance 	= _point2distance(samplerate,additionalratio,diff,debug)
-	reflect 	= _pathdistance(distance,directpath,debug)
-	return reflect	
+	diffs 		= _pd(psklist,samplerate,additionalratio,debug)
+	reflects	= []
+	for diff in diffs:
+		distance 	= _point2distance(samplerate,additionalratio,diff,debug)
+		reflect 	= _pathdistance(distance,directpath,debug)
+		reflects.append(reflect)
+	return reflects
 
 '''
 FUnction: _csv2list()
@@ -73,7 +76,8 @@ def _point2distance(srate,ratio,diff,debug):
 	pointRate = srate * ratio	
 	distance = (diff + 0.0) / pointRate * 34300.00
 	if debug == 1:
-		print "  [Debug]  The distance difference:(cm) ", distance
+		#print "  [Debug]  The distance difference:(cm) ", distance
+		pass
 	return distance
 
 '''
@@ -86,7 +90,7 @@ output:	reflectpath	the distance of the second reflected path
 def _pathdistance(distanceDiff,directpath,debug):
 	reflectpath = directpath + distanceDiff
 	if debug == 1:
-		print "  [Debug]  The distance of the Direct path(cm):  ",directpath
+		#print "  [Debug]  The distance of the Direct path(cm):  ",directpath
 		print "  [Debug]  The distance of the Reflected path(cm): ",reflectpath
 	return reflectpath
 

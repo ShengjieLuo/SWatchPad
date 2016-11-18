@@ -53,7 +53,7 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 		testrange.append(interval)
 	#print testrange
 
-	'''
+	
 	disrange = []
 	interval = 10
 	for i in range(peakrange[0][0]-1000,peakrange[0][1]+1000,interval):
@@ -63,8 +63,8 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 		else:
 			pass
 		disrange.append(psksum)
-	prit disrange
-	'''
+	print disrange
+	
 	result = []
 	for i in range(len(peakrange)):
 		j = peakrange[i][0]
