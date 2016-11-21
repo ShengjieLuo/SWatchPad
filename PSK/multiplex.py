@@ -26,13 +26,13 @@ def demulti(wavename):
 	listWave2=_readwave(wavename)
 	print "  [Debug] FFT-IFFT Begin!"
 	xf=np.fft.fft(listWave2)
-	print "test"
+	#print "test"
 	len1=len(xf)
 	for i in range(int(len1 * (0 / 44.1)),int(len1* (7 / 44.1))):
 		xf[i] = 0 + 0.00000000e+00j
-	print "  [Debug] FFT ready !"
+	#print "  [Debug] FFT ready !"
 	XF=np.fft.ifft(xf)
-	print "  [Debug] IFFT ready!"
+	print "  [Debug] FFT-iFFT ready!"
 	return XF 
 
 #def demulti(wavename):
