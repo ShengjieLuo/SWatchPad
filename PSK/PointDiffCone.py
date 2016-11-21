@@ -29,7 +29,7 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 	#print zerorange[:10]
 
 	tmpzerorange = []
-	threshold = 3
+	threshold = 5
 	for i in range(len(zerorange)):
 		if zerorange[i][1] - zerorange[i][0] > threshold:
 			tmpzerorange.append(zerorange[i])
@@ -45,7 +45,7 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 		else:
 			peakrange.append((left_limit,right_limit))
 			left_limit,right_limit = zerorange[i][0] , zerorange[i][1]
-	#print peakrange
+	print peakrange
 
 	testrange = []
 	for i in range(1,len(peakrange)):
@@ -56,7 +56,7 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 	
 	disrange = []
 	interval = 10
-	for i in range(peakrange[4][0]-1000,peakrange[4][1]+1000,interval):
+	for i in range(peakrange[0][0]-1000,peakrange[0][1]+1000,interval):
 		psksum = sum(psklist[i:(i+interval)])
 		if psksum >= 7:
 			psksum = 10
@@ -65,6 +65,16 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 		disrange.append(psksum)
 	print disrange
 	
+	fp = open("SamplePoint.csv",'a')
+	printrange = psklist[peakrange[0][0]-1000:peakrange[0][1]+1000]
+	string = ""
+	for i in printrange:
+		string += str(i)+','
+	string += '\n'
+	print string
+	fp.write(string)
+	fp.close()	
+
 	result = []
 	for i in range(len(peakrange)):
 		j = peakrange[i][0]
