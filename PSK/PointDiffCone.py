@@ -29,9 +29,9 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 	#print zerorange[:10]
 
 	tmpzerorange = []
-	threshold = 5
+	threshold = 3
 	for i in range(len(zerorange)):
-		if zerorange[i][1] - zerorange[i][0] > 5:
+		if zerorange[i][1] - zerorange[i][0] > threshold:
 			tmpzerorange.append(zerorange[i])
 	zerorange = tmpzerorange
 	#print zerorange[:100]
@@ -56,7 +56,7 @@ def pointdiff(psklist,samplerate,additionalratio,debug=0):
 	
 	disrange = []
 	interval = 10
-	for i in range(peakrange[0][0]-1000,peakrange[0][1]+1000,interval):
+	for i in range(peakrange[4][0]-1000,peakrange[4][1]+1000,interval):
 		psksum = sum(psklist[i:(i+interval)])
 		if psksum >= 7:
 			psksum = 10

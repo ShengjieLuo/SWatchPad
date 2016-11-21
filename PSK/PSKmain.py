@@ -53,5 +53,5 @@ if  __name__=="__main__":
 	#print PSK1Dmain('../testwave/pen/Name0114.wav.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/pen/Name0115.wav.wav',11.95,44100,10,1)
 	#print PSK1Dmain('../testwave/pen/Name0116.wav.wav',11.95,44100,10,1)
-	PSK1Dmain(sys.argv[1],11.95,44100,10,1)
-	#PSKMulti(sys.argv[1],11.95,44100,10,1)
+	#PSK1Dmain(sys.argv[1],11.95,44100,10,1)
+	PSK1DMulti(sys.argv[1],11.95,44100,10,1)

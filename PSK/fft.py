@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib
 import wave
 import scipy.signal as signal
+import sys
 
 '''
 Function: ffttran()
@@ -54,13 +55,13 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	index_begin = _waveIndexBegin(freq,c,leftlimit)
 	index_end = _waveIndexEnd(freq,c,rightlimit)
 	xdata,ydata = _waveFreqData(name,freq,c,index_begin,index_end,N)
-	'''
+	#'''
 	if flag==1:
 		print "  [Debug]  The Primary Frequency Peak"
 		for i in range(len(xdata)):
-			if ydata[i]>100:
+			if ydata[i]>80:
 				print "    freq: "+str(xdata[i])+" energy: "+str(ydata[i])
-	'''
+	#'''
 	return xdata,ydata
 
 '''
@@ -108,4 +109,4 @@ def _waveFreqData(name,freq,c,index_begin,index_end,length):
 
 if __name__=='__main__':
 	#fftHann('18000Hz_10s_PSKSequenceZero.wav',0,20000,1)
-	ffttran('test11_13_2.wav',0,20000,1)
+	ffttran(sys.argv[1],0,20000,1)
