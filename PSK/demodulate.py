@@ -117,7 +117,7 @@ def _freqadd(wavlist,ratio=10,debug=0):
 		print "  [Debug]  Points after addition:",len(y_bspline)
 		fp = open("test.csv","wb")
 		string = ""
-		for i in range(1020600,1022350):
+		for i in range(1005000,1007000):
 			string = string + str(y_bspline[i]) +"\n"
 		fp.write(string)
 		fp.close()
@@ -221,3 +221,4 @@ if __name__ == '__main__':
 	dePSK_ideal('../makewave/18000Hz_10s_PSKSequenceZeroTwoPath.wav','18000Hz_ideal_twopath.csv',debug=1)
 	#dePSK_ideal('18000_test.wav','18000Hz_test.csv',debug=1)
 	#dePSK_ideal('18000_hand.wav','18000_hand.csv',debug=1)
+	#dePSK_multi('../testwave/11-18/Name18No.wav.wav',18000,'../testwave/11-18/Name18No.wav.csv',debug=1)

@@ -474,11 +474,13 @@ if __name__ == "__main__":
         #Note:  please use (18000,10x) as the default parameter in this function
         #       Otherwise the PSK convert-phase cannot be guaranteed -- by Shengjie
 
-	PSKBalanceZeroWaveMake(18000,10)
+	#PSKBalanceZeroWaveMake(18000,10)
 	#PSKLargeZeroWaveMake(18000,10)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,2)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,2)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,1)
 	#PSKSequenceZeroTwoPathWaveMake(18000,10,1.5)
+	PSKSequenceZeroTwoPathWaveMake(18000,10,1.3)
+	
 	#PSKComplexZeroWaveMake(18000,17000,10)
 	#simpleWaveMake(17000,10)

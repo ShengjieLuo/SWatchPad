@@ -1,7 +1,7 @@
 
 def pointDiff(psklist,samplerate,additionalratio,debug=0):
 	FIRST_WINDOW = 25
-	FIRST_STEP = 10	
+	FIRST_STEP = 1	
 	FIRST_THRESHOLD = 10
 	zeroBeginList = _firstLevelSearch(psklist,FIRST_WINDOW,FIRST_STEP,FIRST_THRESHOLD)
 	zeroBeginList = _firstLevelConnect(zeroBeginList,FIRST_WINDOW,FIRST_STEP)
@@ -67,15 +67,16 @@ def _firstLevelSample(psklist,peakrange,num):
 
 def _secondLevelFilter(psklist,peakrange):
 	samplelist = []
+	thre = 10
 	for num in range(len(peakrange)):
 		psksample= _firstLevelSample(psklist,peakrange,num)
-		for i in range(5,len(psksample)):
-			if psksample[i:i+5] == [0]*5:
+		for i in range(thre,len(psksample)):
+			if psksample[i-thre:i] == [0]*thre:
 				break
 		psksample = psksample[i:]
 		samplelist.append(psksample)
 	#print samplelist[0]
-	print psklist[peakrange[0][0]-100:peakrange[0][1]+100]
+	#print psklist[peakrange[0][0]-100:peakrange[0][1]+100]
 	return samplelist
 
 def _secondLevelRegionZero(samplelist):
