@@ -38,8 +38,9 @@ def PSK2DMulti(wave1,wave2,l1,l2,samplerate,additionalratio,debug):
 
 def PSK1DMulti(wave,l,samplerate,additionalratio,debug):
 	signalcsv = wave[:-4]+".csv"
-	dePSK_multi(wave,18000,signalcsv,debug)
-	distance = TDoA(signalcsv,l,samplerate,additionalratio,debug)
+	wavcsv = wave[:-4]+"_original.csv"
+	dePSK_multi(wave,18000,[signalcsv,wavcsv],debug)
+	distance = TDoA(signalcsv,wavcsv,l,samplerate,additionalratio,debug)
 	return
 
 if  __name__=="__main__":

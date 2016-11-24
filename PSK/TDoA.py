@@ -16,6 +16,7 @@ Version
 
 import csv
 from sklearn.cluster import KMeans
+from wavDiff import firstpeak as _first
 from PointDiffCone import pointdiff as _pd
 from PointDiffDensity import pointdiff as _pd
 #from PointDiffHierarchy import pointDiff as _pd
@@ -32,8 +33,10 @@ input5:	debug		the debug flag. If debug = 1, verbose the debug information
 output:	reflectpath	the length of the reflected path
 '''
 
-def TDoA(signalcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
-	psklist 	= _csv2list(signalcsv,debug)
+def TDoA(signalcsv,wavcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
+	psklist 	= _csv2listpsk(signalcsv,debug)
+	wavlist 	= _csv2listwav(wavcsv,debug)
+	first		= _first(wavlist,samplerate,additionalratio,debug)
 	diffs 		= _pd(psklist,samplerate,additionalratio,debug)
 	reflects	= []
 	for diff in diffs:
@@ -48,7 +51,7 @@ input:	csvfile
 input: 	debug
 output:	psklist
 '''
-def  _csv2list(csvfile,debug): 
+def  _csv2listpsk(csvfile,debug): 
 	reader = csv.reader(file(csvfile,'rb'))  
 	for line in reader:
   		psklisttmp = line
@@ -62,6 +65,16 @@ def  _csv2list(csvfile,debug):
 		print "  [Debug]  Total number of digital PSK signals: ",len(psklist)
 	return psklist
 
+def  _csv2listwav(csvfile,debug):
+        reader = csv.reader(file(csvfile,'rb'))
+        for line in reader:
+                wavlisttmp = line
+        wavlist = []
+        for i in wavlisttmp:
+        	wavlist.append(int(round(float(i))))
+	if debug==1:
+                print "  [Debug]  Total number of wav signals: ",len(wavlist)
+        return wavlist
 
 '''
 Function: _point2distance()

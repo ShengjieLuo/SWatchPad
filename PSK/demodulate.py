@@ -44,10 +44,20 @@ def dePSK_multi(wavfile,reffreq,outputfile,debug=0):
 	wavlist = _demulti(wavfile)
         wavlistFilter = _listfilter(wavlist,debug)
         wavlistAdd = _freqadd(wavlistFilter,ratio,debug)
+	wavsignal = _modify(wavlistAdd,reffreq,ratio,debug)
         digitalsignal = _demodulate(wavlistAdd,reffreq,ratio,debug)
-        _list2csv(digitalsignal,outputfile)
-        return digitalsignal
-	
+        _list2csv(digitalsignal,outputfile[0])
+	_list2csv(wavsignal,outputfile[1])
+        return digitalsignal,wavsignal
+
+
+def _modify(wavlist,reffreq,ratio,debug):
+	point_per_cycle = 44100.0*ratio/reffreq
+	tmplist = wavlist[:-int(round(point_per_cycle))]
+	#if debug==1:
+	#	print "  [Debug]  Total number of wav signal: ",tmplist[1000000:]
+	return tmplist[1000000:]
+
 '''
 Function: _wav2list()
 说明：私有函数，用于将csv格式的数据转化为List数据结构
@@ -134,8 +144,8 @@ def _demodulate(wavlist,reffreq,ratio=10,debug=1):
 	sampleRate = 44100.0*ratio 		#经过处理后，每秒采样的个数
 	cycleRate = reffreq			#每秒采样的周期数
 	point_per_cycle = sampleRate/cycleRate	#每个周期对应的采样点个数
-	wavlist_original = wavlist[int(round(point_per_cycle)):] #原始波形
-	wavlist_difference = wavlist[:int(len(wavlist)-round(point_per_cycle))] #差分相干波形
+	wavlist_difference = wavlist[int(round(point_per_cycle)):] #原始波形
+	wavlist_original = wavlist[:int(len(wavlist)-round(point_per_cycle))] #差分相干波形
 	if debug == 1:
 		print "  [Debug]  Sample point per signal cycle: ",point_per_cycle
 	digitalsignal = []
