@@ -73,7 +73,6 @@ def _strpsk(iphase,psklist,debug):
 		ipsk.append(tmp)
         return ipsk
 
-#def
 '''
 def _difflib_leven(str1, str2,debug):
 	leven_cost = 0
@@ -131,28 +130,45 @@ def _readmode(filename,debug):
 	return modelist
 
 def _regioncompare(str1,str2,debug):
-	step = 5
+	step = 1
 	window = 25
 	threshold = 17
+	comparelist = []
 	for  i in range(0,min([len(str1),len(str2)])-window,step):
 		str1region = str1[i:i+window]
 		str2region = str2[i:i+window]
 		compare = _difflib_leven(str1region,str2region,debug)
-		if compare > threshold:
-			break
+		comparelist.append(compare)
+	result = comparelist.index(max(comparelist[:150]))
+	flag = sum(comparelist[:50])	
 	#print compare
-	return i
+	return result,flag
 	
 
 def _compare(ipsk,modelist,debug):
 	resultlist = []
 	zerofirstMode = modelist[0]
 	onefirstMode = modelist[1]
-	_compareshow(ipsk[0],zerofirstMode,onefirstMode,debug)
+	_compareshow(ipsk[3],zerofirstMode,onefirstMode,debug)
 	for string in ipsk:
-		result1 = _regioncompare(string,zerofirstMode,debug)
-		result2 = _regioncompare(string,onefirstMode,debug)	
-		result = max([result1,result2])
+		result1 , flag1 = _regioncompare(string,zerofirstMode,debug)
+		result2 , flag2 = _regioncompare(string,onefirstMode,debug)	
+		'''
+		#Judge Method 1
+		if flag1>flag2:
+			result = result2
+		else:
+			result = result1
+		'''
+		#Judge Method 2
+		#'''
+		if string[:3] == "000":
+			result = result1
+		elif string[:3] == "111":
+			result = result2
+		else:
+			result = -1
+		#'''
 		resultlist.append(result)
 	print resultlist
 	return resultlist
