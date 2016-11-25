@@ -34,9 +34,11 @@ def ffttran(name,start,N,leftlimit,rightlimit,flag=0):
 	wf = wave.open(name, "rb")
 	nframes = wf.getnframes()
 	framerate = wf.getframerate()
+	'''
 	if flag==1:
 		print "  [Debug]  Totally Frames: ",nframes
 		print "  [Debug]  The Framerate of the audio file: ",framerate
+	'''
 	str_data = wf.readframes(framerate)
 	wf.close()
 	wave_data = np.fromstring(str_data, dtype=np.short)
@@ -52,13 +54,13 @@ def ffttran(name,start,N,leftlimit,rightlimit,flag=0):
 	index_begin = _waveIndexBegin(freq,c,leftlimit)
 	index_end = _waveIndexEnd(freq,c,rightlimit)
 	xdata,ydata = _waveFreqData(name,freq,c,index_begin,index_end,N)
-	'''
+	#'''
 	if flag==1:
 		print "  [Debug]  The Primary Frequency Peak"
 		for i in range(len(xdata)):
 			if ydata[i]>100:
 				print "    freq: "+str(xdata[i])+" energy: "+str(ydata[i])
-	'''
+	#'''
 	return xdata,ydata
 
 '''
