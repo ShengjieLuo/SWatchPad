@@ -19,7 +19,8 @@ from sklearn.cluster import KMeans
 from wavDiff import firstpeak as _first
 #from PointDiffCone import pointdiff as _pd
 #from PointDiffDensity import pointdiff as _pd
-from PointDiffHierarchy import pointDiff as _pd
+#from PointDiffHierarchy import pointDiff as _pd
+from PointDiffCompare import pointDiff as _pd
 
 '''
 Function:TDoA()
@@ -36,8 +37,7 @@ output:	reflectpath	the length of the reflected path
 def TDoA(signalcsv,wavcsv,directpath = 6, samplerate = 44100, additionalratio = 10, debug = 0):
 	psklist 	= _csv2listpsk(signalcsv,debug)
 	wavlist 	= _csv2listwav(wavcsv,debug)
-	first		= _first(wavlist,psklist,samplerate,additionalratio,debug)
-	diffs 		= _pd(psklist,samplerate,additionalratio,debug)
+	diffs 		= _pd(wavlist,psklist,samplerate,additionalratio,debug)
 	reflects	= []
 	for diff in diffs:
 		distance 	= _point2distance(samplerate,additionalratio,diff,debug)
