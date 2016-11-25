@@ -59,7 +59,7 @@ def ffttran(name,leftlimit,rightlimit,flag=0):
 	if flag==1:
 		print "  [Debug]  The Primary Frequency Peak"
 		for i in range(len(xdata)):
-			if ydata[i]>80:
+			if ydata[i]>5:
 				print "    freq: "+str(xdata[i])+" energy: "+str(ydata[i])
 	#'''
 	return xdata,ydata

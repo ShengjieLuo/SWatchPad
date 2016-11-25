@@ -16,7 +16,6 @@ Version
 
 import csv
 from sklearn.cluster import KMeans
-from wavDiff import firstpeak as _first
 #from PointDiffCone import pointdiff as _pd
 #from PointDiffDensity import pointdiff as _pd
 #from PointDiffHierarchy import pointDiff as _pd
@@ -38,6 +37,7 @@ def TDoA(signalcsv,wavcsv,directpath = 6, samplerate = 44100, additionalratio = 
 	psklist 	= _csv2listpsk(signalcsv,debug)
 	wavlist 	= _csv2listwav(wavcsv,debug)
 	diffs 		= _pd(wavlist,psklist,samplerate,additionalratio,debug)
+	#diffs 		= _pd(psklist,samplerate,additionalratio,debug)
 	reflects	= []
 	for diff in diffs:
 		distance 	= _point2distance(samplerate,additionalratio,diff,debug)
@@ -71,7 +71,7 @@ def  _csv2listwav(csvfile,debug):
                 wavlisttmp = line
         wavlist = []
         for i in wavlisttmp:
-        	wavlist.append(int(round(float(i))))
+        	wavlist.append(float(i))
 	if debug==1:
                 print "  [Debug]  Total number of wav signals: ",len(wavlist)
         return wavlist

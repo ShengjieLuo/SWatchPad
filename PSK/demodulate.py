@@ -127,7 +127,7 @@ def _freqadd(wavlist,ratio=10,debug=0):
 		print "  [Debug]  Points after addition:",len(y_bspline)
 		fp = open("test.csv","wb")
 		string = ""
-		for i in range(1000000+9000,1000000+11000):
+		for i in range(1000000,1000000+2000):
 			string = string + str(y_bspline[i]) +"\n"
 		fp.write(string)
 		fp.close()

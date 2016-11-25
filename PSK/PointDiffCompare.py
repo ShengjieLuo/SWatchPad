@@ -19,15 +19,15 @@ def pointDiff(wavlist,psklist,samplerate,additionalratio,debug):
 def _scan(wavlist,debug):
 	zerolist = []
 	for i in range(1,len(wavlist)):
-		if wavlist[i]*wavlist[i-1]<0:
+		if wavlist[i]*wavlist[i-1]<=0:
 			zerolist.append(i)
 	zerodistance = []
 	for i in range(0,len(zerolist)-1):
 		zerodistance.append(zerolist[i+1]-zerolist[i])
-	'''
+	#'''
 	if debug==1:
-		print "  [Debug]  The zero distance: ",zerodistance[:100]
-	'''
+		print "  [Debug]  The zero distance: ",zerolist[:100]
+	#'''
 	return zerolist,zerodistance
 
 def _ref(rate,ratio,debug):
@@ -47,15 +47,24 @@ def _detect(zerolist,zerodist,refdist,debug):
 def _range(outlier,debug):
 	iphase = []
 	leftlimit , rightlimit = outlier[0][0] , sum(outlier[0])
+	
+	thre1 = 150
+	#Note: For smartphone mic, please use 150
+	#Note: For PC mic,please use 100
+
+	thre2 = 350
+	#Note: For smartphone mic, please use 150
+	#Note: For PC mic, please use 350
+
 	for i in range(0,len(outlier)-1):
-		if abs(outlier[i+1][0]-outlier[i][0])<150:
+		if abs(outlier[i+1][0]-outlier[i][0])<thre1:
 			rightlimit = outlier[i+1][0] + outlier[i+1][1]
 		else:
 			iphase.append((leftlimit,rightlimit))
 			leftlimit , rightlimit = outlier[i+1][0] , sum(outlier[i+1])
 	iphase.append((leftlimit,rightlimit))
 	for i in range(len(iphase)-1,-1,-1):
-		if iphase[i][1] - iphase[i][0] < 150:
+		if iphase[i][1] - iphase[i][0] < thre2:
 			iphase.remove(iphase[i])
 	if debug==1:
 		print "  [Debug]  The inverse phase field: ",iphase[:100]
@@ -157,7 +166,7 @@ def _compare(ipsk,modelist,debug):
 	resultlist = []
 	zerofirstMode = modelist[0]
 	onefirstMode = modelist[1]
-	#_compareshow(ipsk[3],zerofirstMode,onefirstMode,debug)
+	_compareshow(ipsk[1],zerofirstMode,onefirstMode,debug)
 	for string in ipsk:
 		result1 , flag1 = _regioncompare(string,zerofirstMode,debug)
 		result2 , flag2 = _regioncompare(string,onefirstMode,debug)	
